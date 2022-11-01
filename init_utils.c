@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:05:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/01 18:21:42 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/01 19:57:54 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	push(t_philo **thestack, int thevalue, char **argv, int argc)
 	if (newnode == NULL)
 	{
 		write(2, "Error\n", 6);
-		return (0);
+		exit (1);
 	}
 	newnode->philo_id = thevalue;
 	newnode->philo_t_die = ft_atoi(argv[2]);
@@ -43,7 +43,11 @@ int	push(t_philo **thestack, int thevalue, char **argv, int argc)
 		newnode->remaining_eats = ft_atoi(argv[5]);
 	else
 		newnode->remaining_eats = 0;
-	pthread_mutex_init(&newnode->fork_mutex, NULL);
+	// pthread_mutex_init(&newnode->fork_mutex, NULL);
+	// if (pthread_create(&newnode->philo_thr, NULL, (void *)&routine, &newnode) != 0) {
+	// 	perror("Failed to create thread");
+	// 	exit(1);
+	// }
 	newnode->next = NULL;
 	if (*thestack == NULL)
 		*thestack = newnode;
@@ -65,7 +69,6 @@ int	fill_ll(int philo_id, char **argv, t_philo **philos,int argc)
 	tmp = ft_lstlast(*philos);
 	free(tmp->next);
 	tmp->next = NULL;
-	// *philos->next = tmp;
 	return (0);
 }
 //initializes linked list a with parameters argv,

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pseudocode.c                                       :+:      :+:    :+:   */
+/*   test1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/29 15:50:28 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/01 19:45:32 by adinari          ###   ########.fr       */
+/*   Created: 2022/11/01 19:53:15 by adinari           #+#    #+#             */
+/*   Updated: 2022/11/01 20:13:05 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ int main(int argc, char *argv[])
 {
     int     n;
 	t_philo *philos;
+	t_philo *tmp;
 
 	if (argc < 5 || argc > 6)//use is_digit on args
 	{
@@ -111,9 +112,63 @@ int main(int argc, char *argv[])
 	}
     n = atoi(argv[1]);
     philos = init_philosophers(argc, argv);
-	// display_list(philos);
-	wait_threads(philos);
-	dstr_mutx(philos);
+	display_list(philos);
+
+	int k;
+	tmp = philos;
+	while (tmp)
+	{
+		k=pthread_mutex_init(&tmp->fork_mutex,NULL);
+		if(k==-1)
+		{
+			printf("\nmutex initialized");
+			exit(1);
+		}
+		tmp = tmp->next;
+		if (tmp == philos)
+			break ;
+	}
+
+	tmp = philos;
+	while (tmp)
+	{
+		k=pthread_create(&tmp->philo_thr,NULL,(void *)&routine, tmp);
+		if(k!=0)
+		{
+			printf("\n Thread creation error \n");
+			exit(1);
+		}
+		tmp = tmp->next;
+		if (tmp == philos)
+			break ;
+	}
+	tmp = philos;
+	while (tmp)
+	{
+		k=pthread_join(tmp->philo_thr,NULL);
+		if(k!=0)
+		{
+			printf("\n Thread join failed \n");
+			exit(1);
+		}
+		tmp = tmp->next;
+		if (tmp == philos)
+			break ;
+	}
+	tmp = philos;
+	while (tmp)
+	{
+		k=pthread_mutex_destroy(&tmp->fork_mutex);
+		if(k!=0)
+		{
+			printf("\n Mutex Destroyed \n");
+			exit(1);
+		}
+		tmp = tmp->next;
+		if (tmp == philos)
+			break ;
+	}
+
 	system("leaks philosophers");
     return argc;
 }

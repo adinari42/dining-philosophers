@@ -6,13 +6,13 @@
 #    By: adinari <adinari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/29 16:24:13 by adinari           #+#    #+#              #
-#    Updated: 2022/10/31 22:07:39 by adinari          ###   ########.fr        #
+#    Updated: 2022/11/01 20:12:54 by adinari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philosophers
 
-FILES = pseudocode.c\
+FILES = test1.c\
 		init_utils.c
 
 OBJECTS = $(FILES:.c=.o)
