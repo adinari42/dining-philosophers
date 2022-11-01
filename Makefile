@@ -6,13 +6,14 @@
 #    By: adinari <adinari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/29 16:24:13 by adinari           #+#    #+#              #
-#    Updated: 2022/10/31 17:30:20 by adinari          ###   ########.fr        #
+#    Updated: 2022/10/31 22:07:39 by adinari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philosophers
 
-FILES = pseudocode.c
+FILES = pseudocode.c\
+		init_utils.c
 
 OBJECTS = $(FILES:.c=.o)
 
@@ -29,19 +30,22 @@ all: $(NAME)
 %.o:%.c
 	@gcc $(FLAGS) -c $< -o $@
 
-# LIBS = libft/libft.a
+LIBS = libft/libft.a
 
 $(NAME): $(OBJECTS)
-	@gcc $(OBJECTS) -o $(NAME)
-# @cd libft && make
-# @gcc $(OBJECTS) $(LIBS) -o $(NAME) 
+	@cd libft && make
+	@gcc $(OBJECTS) $(LIBS) -o $(NAME) 
+	
+# @gcc $(OBJECTS) -o $(NAME)
+
 
 clean:
+	@cd libft && make clean
 	@rm -rf $(OBJECTS)
-# @cd libft && make clean
+
 
 fclean: clean
+	@cd libft && make fclean
 	@rm -rf $(NAME) *.o
-# @cd libft && make fclean
 
 re: fclean all

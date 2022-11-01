@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 15:50:28 by adinari           #+#    #+#             */
-/*   Updated: 2022/10/31 14:44:08 by adinari          ###   ########.fr       */
+/*   Updated: 2022/10/31 18:12:39 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void    init_philosophers(int total_ph)
 int main(int argc, char *argv[]) 
 {
     int     n;
-
+    t_philo *philos;
     n = atoi(argv[1]);
     
     init_philosophers(n);

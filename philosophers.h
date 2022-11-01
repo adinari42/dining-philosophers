@@ -6,14 +6,18 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 15:59:26 by adinari           #+#    #+#             */
-/*   Updated: 2022/10/31 17:34:04 by adinari          ###   ########.fr       */
+/*   Updated: 2022/10/31 22:20:11 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef PHILOSOPHERS_H
+# define PHILOSOPHERS_H
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
+#include "libft/libft.h"
 
 
 typedef struct s_philo
@@ -38,3 +42,11 @@ typedef struct s_data
 	int				philo_t_sleep;
 	int				number_of_eats;
 }				t_data;
+
+t_philo	*ft_lstlast(t_philo *lst);
+int	push(t_philo **thestack, int thevalue, char **argv, int argc);
+int	fill_ll(int philo_id, char **argv, t_philo **philos, int argc);
+int	init_junk(char **argv, int argc, t_philo **philos);
+t_philo *init_philosophers(int argc, char **argv);
+
+#endif

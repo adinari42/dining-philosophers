@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 15:50:28 by adinari           #+#    #+#             */
-/*   Updated: 2022/10/31 17:45:47 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/01 16:27:50 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,92 +25,49 @@ void *routine(pthread_mutex_t *mutex)
     return (NULL);
 }
 
-/*returns last node of the ll*/
-t_philo	*ft_lstlast(t_philo *lst)
+void	free_ll(t_philo *stack)
 {
-	if (!lst)
-		return (NULL);
-	while (lst->next != NULL)
-		lst = lst->next;
-	return (lst);
-}
-
-int	push(t_philo **thestack, int thevalue)
-{
-	t_philo	*newnode;
-	t_philo *temp;
-
-	if (thestack == NULL)
-		return (0);
-	newnode = malloc(sizeof(t_philo));
-	if (newnode == NULL)
-	{
-		write(2, "Error\n", 6);
-		return (0);
-	}
-	newnode->philo_id = thevalue;
-	newnode->next = NULL;
-	if (*thestack == NULL)
-		*thestack = newnode;
-	else
-	{
-		temp = *thestack;
-		while (temp->next != NULL)
-			temp = temp->next;
-		temp->next = newnode;
-	}
-	return (1);
-}
-
-int	fill_ll(int philo_id, t_philo **philos)
-{
+	t_philo	*tmp1;
 	t_philo	*tmp;
 
-	push(philos, philo_id);
-	tmp = ft_lstlast(*philos);
-	free(tmp->next);
-	tmp->next = NULL;
-	return (0);
-}
-//initializes linked list a with parameters argv,
-//prints error in case of failure
-//returns 1 in case of duplicates
-int	init_junk(int total_ph, t_philo **philos)
-{
-	int	i;
-
-	i = 0;
-	
-	while (++i < total_ph)
-		if (fill_ll(i + 1, philos))
-			return (write(2, "Error\n", 6));
-
-	return (0);
+	tmp = stack;
+	tmp1 = NULL;
+	while (tmp)
+	{
+		tmp1 = tmp;
+		tmp = tmp->next;
+		free(tmp1);
+	}
+	stack = NULL;
 }
 
-void    init_philosophers(int total_ph)
+void	display_list(t_philo *philos)
 {
-    t_philo *philos;
+	t_philo *tmp;
 
-    if (init_junk(total_ph, &philos) != 0)
+	tmp = philos;
+	while (tmp)
 	{
-		perror("Error\n");
-		exit(1);
+		printf("philo id = %d , die time = %d, eat time = %d, sleep time = %d , remain eats = %d\n",tmp->philo_id, tmp->philo_t_die, tmp->philo_t_eat, tmp->philo_t_sleep, tmp->remaining_eats);
+		tmp = tmp->next;
+		if (tmp == philos)
+			break ;
 	}
-	while (philos)
-	{
-		printf("philo id = %d\n", philos->philo_id);
-		philos = philos->next;
-	}
-    //while loop to initialize every fork_mutex for each philo
 }
 
 int main(int argc, char *argv[]) 
 {
     int     n;
+	t_philo *philos;
 
+	if (argc < 5 || argc > 6)//use is_digit on args
+	{
+		perror("Error : wrong number of arguments\n");
+		exit(1);
+	}
     n = atoi(argv[1]);
-    init_philosophers(n);
-	
+    philos = init_philosophers(argc, argv);
+	display_list(philos);
+	system("leaks philosophers");
     return argc;
 }
