@@ -6,13 +6,11 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 19:53:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/01 20:13:05 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/01 20:16:02 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-int i = 0;
 
 void *routine(t_philo *philo)
 {

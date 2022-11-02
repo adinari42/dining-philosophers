@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 15:59:26 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/01 19:43:34 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/02 17:20:41 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "libft/libft.h"
-
+#include <sys/time.h>
 
 typedef struct s_philo
 {
@@ -29,6 +29,7 @@ typedef struct s_philo
 	int				philo_t_eat;
 	int				philo_t_sleep;
 	int				remaining_eats;
+	struct timeval start;
 	struct t_data 	*data;
 	struct s_philo	*next;
 }				t_philo;
