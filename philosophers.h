@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 15:59:26 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/02 17:20:41 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/05 01:40:56 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,19 +29,21 @@ typedef struct s_philo
 	int				philo_t_eat;
 	int				philo_t_sleep;
 	int				remaining_eats;
+	long			last_eat;
 	struct timeval start;
-	struct t_data 	*data;
+	struct s_data 	*monitor;
 	struct s_philo	*next;
+	int				state;//1 eating //2 sleeping //3 thinking
 }				t_philo;
 
 typedef struct s_data
 {
-	pthread_mutex_t monitor_mutex;
-	int				total_philo;
-	int				philo_t_die;
-	int				philo_t_eat;
-	int				philo_t_sleep;
-	int				number_of_eats;
+	pthread_mutex_t print_mutex;
+	pthread_mutex_t death_mutex;
+	pthread_mutex_t	creation_mutex;
+	int				isdead;
+	int				iscreated;
+	int				infinite;
 }				t_data;
 
 void	*routine(t_philo *philo);
@@ -50,5 +52,7 @@ int		push(t_philo **thestack, int thevalue, char **argv, int argc);
 int		fill_ll(int philo_id, char **argv, t_philo **philos, int argc);
 int		init_junk(char **argv, int argc, t_philo **philos);
 t_philo	*init_philosophers(int argc, char **argv);
+
+
 
 #endif

@@ -6,13 +6,13 @@
 #    By: adinari <adinari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/29 16:24:13 by adinari           #+#    #+#              #
-#    Updated: 2022/11/02 16:44:04 by adinari          ###   ########.fr        #
+#    Updated: 2022/11/05 02:26:10 by adinari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philosophers
 
-FILES = version2.c\
+FILES = version3.c\
 		init_utils.c
 
 OBJECTS = $(FILES:.c=.o)
@@ -23,18 +23,18 @@ OBJECTS = $(FILES:.c=.o)
 
 CC = gcc
 
-FLAGS = -Wall -Werror -Wextra -pthread  -g -fsanitize=thread
+FLAGS = -Wall -Werror -Wextra -pthread  -g # -fsanitize=thread
 
 all: $(NAME)
 
 %.o:%.c
-	@gcc $(FLAGS) -c $< -o $@
+	gcc $(FLAGS) -c $< -o $@
 
 LIBS = libft/libft.a
 
 $(NAME): $(OBJECTS)
 	@cd libft && make
-	@gcc $(OBJECTS)  -g -fsanitize=thread $(LIBS) -o $(NAME) 
+	@gcc $(OBJECTS)  -g $(LIBS) -o $(NAME) 
 	
 # @gcc $(OBJECTS) -o $(NAME)
 

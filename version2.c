@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 19:53:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/02 21:12:10 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/03 16:39:48 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ long	get_time_stamp(struct timeval *start_time)
 int g_int = 0;
 struct timeval *g_start = NULL;
 int death_flag = 0;
-void inline eating(t_philo *philo)
+void eating(t_philo *philo)
 {
 // printf  to  get forks and 	// check here for death
 	pthread_mutex_lock(&philo->fork_mutex);//when philosopher 5 is eating he takes fork 1 and fork 5 // prevent deadlock
@@ -57,17 +57,61 @@ void inline eating(t_philo *philo)
 void *routine(t_philo *philo)
 {
 	// check here for death
-	printf("%li ms Philosopher %d is thinking\n",get_time_stamp(&philo->start),philo->philo_id);// dont print if someone died
-	eating(philo);
-	// check here for death
-	printf("%li ms Philosopher %d is sleeping\n",get_time_stamp(&philo->start),philo->philo_id);// dont print if someone died
-	usleep(philo->philo_t_sleep * 1000);// maybe improve this fcking thing aka remove delay
-	if ( 	philo->remaining_eats < 0)
-		return (NULL);
-	else
-		routine(philo);
+
+	while (1 || exiit (iddead))
+	{
+		printf("%li ms Philosopher %d is thinking\n",get_time_stamp(&philo->start),philo->philo_id);// dont print if someone died
+		if (!dead)
+			eating(philo);
+		
+		// check here for death
+		usleep(1000);
+		printf("%li ms Philosopher %d is sleeping\n",get_time_stamp(&philo->start),philo->philo_id);// dont print if someone died
+		if (!dead )usleep(philo->philo_t_sleep * 1000);// maybe improve this fcking thing aka remove delay
+		if (philo->remaining_eats < 0)
+			return (NULL);
+	}
 	return (NULL);
 }
+
+/*
+	sleep
+	if (dead)
+	{
+
+	}
+	if (time to sleep is up)
+	{
+
+	}
+*/
+
+
+
+
+/*
+
+
+	while (1 && !dead)
+	{
+		if (state == fork)
+			take forks
+		if (state == eat)
+			eat
+		if (state == sleep)
+			sleep
+		if (state == think)
+			think
+
+
+		usleep(1000);
+	}
+
+
+
+*/
+
+
 //how somethin died
 // if doenst eat before
 
@@ -75,6 +119,20 @@ void *routine(t_philo *philo)
 // -> print RIP
 // -> stop printing
 // -> pthread join everyting
+
+
+void	print(id, what to do)
+{
+	lock mutex;
+	if (1)
+		printf("iid is sleeping")
+	if (2)
+		printf("iid is eating")
+	unlock mutex;
+
+}
+
+
 
 void	free_ll(t_philo *stack)
 {

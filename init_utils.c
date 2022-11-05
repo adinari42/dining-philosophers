@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:05:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/01 19:57:54 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/05 02:23:41 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	push(t_philo **thestack, int thevalue, char **argv, int argc)
 	if (argc == 6)
 		newnode->remaining_eats = ft_atoi(argv[5]);
 	else
-		newnode->remaining_eats = 0;
+		newnode->remaining_eats = -1;
 	// pthread_mutex_init(&newnode->fork_mutex, NULL);
 	// if (pthread_create(&newnode->philo_thr, NULL, (void *)&routine, &newnode) != 0) {
 	// 	perror("Failed to create thread");
@@ -88,6 +88,30 @@ int	init_junk(char **argv, int argc, t_philo **philos)
 	}
 	return (0);
 }
+void	init_monitor(t_philo *philo)
+{
+	t_data	*monitor;
+	t_philo	*tmp;
+
+	monitor = malloc(sizeof(t_data));
+	if (monitor == NULL)
+	{
+		write(2, "Error\n", 6);
+		exit (1);
+	}
+	pthread_mutex_init(&monitor->death_mutex, NULL);
+	pthread_mutex_init(&monitor->print_mutex, NULL);
+	monitor->isdead = 0;
+	monitor->iscreated = 0;
+	tmp = philo;
+	while (tmp)
+	{
+		tmp->monitor = monitor;
+		tmp = tmp->next;
+		if (tmp == philo)
+			break ;
+	}
+}
 
 t_philo    *init_philosophers(int argc, char **argv)
 {
@@ -101,7 +125,6 @@ t_philo    *init_philosophers(int argc, char **argv)
 	t_philo	*tmp;
 	tmp = ft_lstlast(philos);
 	tmp->next = philos;
-	return philos;
-
-    //while loop to initialize every fork_mutex for each philo
+	init_monitor(philos);
+	return (philos);
 }
