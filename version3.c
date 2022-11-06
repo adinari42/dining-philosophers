@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 19:53:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/05 22:41:12 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/06 16:48:31 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,22 +49,31 @@ void	ft_usleep(long int time_in_ms)
 		usleep(200);
 }
 
+
+
 void	print(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->monitor->print_mutex);
-	if (philo->monitor->isdead)
-		pthread_mutex_lock(&philo->monitor->death_mutex);
-	if (philo->state == 1)
+	if (philo->monitor->isdead != 1)
 	{
-		printf("%li ms Philosopher %d took a fork\n",philo->last_eat,philo->philo_id);
-		printf("%li ms Philosopher %d is eating\n",philo->last_eat ,philo->philo_id);
+	// 	{	
+	// 	pthread_mutex_lock(&philo->monitor->death_mutex);
+	// 	printf("deathmutex locked, %d\n", philo->monitor->isdead);
+	// }
+		if (philo->state == 1)
+		{
+			printf("%li ms Philosopher %d took a fork\n",philo->last_eat,philo->philo_id);
+			printf("%li ms Philosopher %d is eating\n",philo->last_eat ,philo->philo_id);
+		}
+		if (philo->state == 2)
+			printf("%li ms Philosopher %d is sleeping\n",get_time_stamp(&philo->start),philo->philo_id);
+		if (philo->state == 3)
+			printf("%li ms Philosopher %d is thinking\n",get_time_stamp(&philo->start),philo->philo_id);
+		if (philo->state == 5)
+			printf("%li ms Philosopher %d took a fork\n",get_time_stamp(&philo->start),philo->philo_id);
+	// if (!philo->monitor->isdead)
+	// 	pthread_mutex_unlock(&philo->monitor->death_mutex);
 	}
-	if (philo->state == 2)
-		printf("%li ms Philosopher %d is sleeping\n",get_time_stamp(&philo->start),philo->philo_id);
-	if (philo->state == 3)
-		printf("%li ms Philosopher %d is thinking\n",get_time_stamp(&philo->start),philo->philo_id);
-	if (philo->monitor->isdead)
-		pthread_mutex_unlock(&philo->monitor->death_mutex);
 	pthread_mutex_unlock(&philo->monitor->print_mutex);
 }
 
@@ -77,16 +86,24 @@ void join_threads(t_philo *philo)
 	printf("joining threads, death = %d\n", philo->monitor->isdead);
 	while (tmp)
 	{
-		k = pthread_join(tmp->philo_thr,NULL);
-		if (k != 0)
+		if (tmp->state != 4)
 		{
-			printf("\n Thread join failed \n");
-			exit(1);
-		}
+			k = pthread_join(tmp->philo_thr, NULL);
+			printf("thread_join loop, killing phil %d\n", tmp->philo_id);
+			if (k != 0)
+			{
+				printf("check = %d\n", philo->monitor->isdead);
+				printf("\n Thread join failed \n");
+			}
+			tmp->state = 4;
+		}	
 		tmp = tmp->next;
 		if (tmp == philo)
 			break ;
 	}
+	k = pthread_join(tmp->monitor->death_monit, NULL);
+	if (k != 0)
+		printf("\n Thread join failed \n");
 }
 
 void	destroy_mutexes(t_philo *philos)
@@ -121,25 +138,40 @@ void	destroy_mutexes(t_philo *philos)
 	}
 }
 
-void	check_death(t_philo *philo)
+void	*check_death(t_philo *philo)
 {
 	t_philo *tmp;
 
 	tmp = philo;
-	while (tmp && tmp->monitor->isdead != 1)
+	if (tmp->monitor->isdead != 1)
 	{
-		if (get_time_stamp(&philo->start) - philo->last_eat > philo->philo_t_die)
+		while (tmp)
 		{
-			philo->monitor->isdead = 1;
-			printf("Philosopher %d has died\n", philo->philo_id);
-			join_threads(philo);
-			break;
+			if (get_time_stamp(&philo->start) - philo->last_eat > philo->philo_t_die)
+			{
+				philo->monitor->isdead = 1;
+				printf("%ld Philosopher %d has died\n", philo->last_eat + philo->philo_t_die ,philo->philo_id);
+				// join_threads(philo);
+				break;
+			}
+			tmp = tmp->next;
+			if (tmp == philo)
+				break ;
 		}
-		tmp = tmp->next;
-		if (tmp == philo)
-			break ;
 	}
-	
+	return (NULL);
+}
+
+void	death_monitor_thread(t_philo *philo)
+{
+	int	k;
+
+	k = pthread_create(&philo->monitor->death_monit, NULL, (void *)&check_death, philo);
+	if(k != 0)
+	{
+		printf("\n Thread creation error \n");
+		exit(1);
+	}
 }
 
 int g_int = 0;
@@ -147,17 +179,17 @@ struct timeval *g_start = NULL;
 void eating(t_philo *philo)
 {
 // printf  to  get forks and 	// check here for death
-	check_death(philo);
+	// check_death(philo);
 	pthread_mutex_lock(&philo->fork_mutex);// prevent deadlock
-	printf("%li ms Philosopher %d took a fork\n",get_time_stamp(&philo->start),philo->philo_id);
+	philo->state = 5;
+	print(philo);
 // printf  to  get forks and 	// check here for death
-	check_death(philo);
+	// check_death(philo);
 	pthread_mutex_lock(&philo->next->fork_mutex);// prevent deadlock
 	philo->state = 1;
 	philo->last_eat = get_time_stamp(&philo->start);
 	print(philo);// dont print if someone died	// check here for death
 	ft_usleep(philo->philo_t_eat);
-	// if (philo->monitor->infinite == 0)
 	philo->remaining_eats--;
 	pthread_mutex_unlock(&philo->fork_mutex);
 	pthread_mutex_unlock(&philo->next->fork_mutex);
@@ -167,23 +199,26 @@ void *routine(t_philo *philo)
 	while(philo->monitor->iscreated == 0)
 		ft_usleep(1);
 	// check here for death
-	check_death(philo);
+	// check_death(philo);
 	// if (philo->philo_id % 2 == 0)
 	// 	ft_usleep(philo->philo_t_eat / 2);
 	while (!philo->monitor->isdead)
-	{
+	 {	//check_death(philo);
 		philo->state = 3;//thinking
 		print(philo);
-		if (!philo->monitor->isdead)//eating
+		if (!philo->monitor->isdead){
+			// check_death(philo);
 			eating(philo);
-		check_death(philo);
+		}//eating
+		// check_death(philo);
 		if (!philo->monitor->isdead)
 		{	philo->state = 2;//sleeping
 			print(philo);
 			ft_usleep(philo->philo_t_sleep);}// maybe improve this fcking thing aka remove delay
+		// check_death(philo);
 		if (philo->remaining_eats == 0 || philo->monitor->isdead)
 			return (NULL);
-	}
+	 }
 	return (NULL);
 }
 
