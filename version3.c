@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 19:53:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/06 16:48:31 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/06 16:53:49 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,8 @@ void	*check_death(t_philo *philo)
 				break;
 			}
 			tmp = tmp->next;
-			if (tmp == philo)
-				break ;
+			// if (tmp == philo)
+			// 	break ;
 		}
 	}
 	return (NULL);
@@ -200,8 +200,8 @@ void *routine(t_philo *philo)
 		ft_usleep(1);
 	// check here for death
 	// check_death(philo);
-	// if (philo->philo_id % 2 == 0)
-	// 	ft_usleep(philo->philo_t_eat / 2);
+	if (philo->philo_id % 2 == 0)
+		ft_usleep(philo->philo_t_eat / 2);
 	while (!philo->monitor->isdead)
 	 {	//check_death(philo);
 		philo->state = 3;//thinking
@@ -352,6 +352,7 @@ int main(int argc, char *argv[])
 	}
 	pthread_mutex_lock(&philos->monitor->creation_mutex);
 	philos->monitor->iscreated = 1;
+	death_monitor_thread(philos);
 	pthread_mutex_unlock(&philos->monitor->creation_mutex);
 	if (!philos->monitor->isdead)
 		join_threads(philos);
