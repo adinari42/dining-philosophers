@@ -6,7 +6,7 @@
 #    By: adinari <adinari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/29 16:24:13 by adinari           #+#    #+#              #
-#    Updated: 2022/11/05 02:26:10 by adinari          ###   ########.fr        #
+#    Updated: 2022/11/07 00:37:17 by adinari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,9 +21,9 @@ OBJECTS = $(FILES:.c=.o)
 
 # @make -C ./libft
 
-CC = gcc
+CC = @gcc -fsanitize=thread
 
-FLAGS = -Wall -Werror -Wextra -pthread  -g # -fsanitize=thread
+FLAGS = -Wall -Werror -Wextra -pthread 
 
 all: $(NAME)
 
@@ -34,7 +34,7 @@ LIBS = libft/libft.a
 
 $(NAME): $(OBJECTS)
 	@cd libft && make
-	@gcc $(OBJECTS)  -g $(LIBS) -o $(NAME) 
+	$(CC) $(OBJECTS) $(LIBS) -o $(NAME) 
 	
 # @gcc $(OBJECTS) -o $(NAME)
 

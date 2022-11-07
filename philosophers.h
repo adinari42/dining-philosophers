@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 15:59:26 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/06 16:40:40 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/07 04:22:36 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ typedef struct s_philo
 	struct timeval start;
 	struct s_data 	*monitor;
 	struct s_philo	*next;
-	int				state;//1 eating //2 sleeping //3 thinking //4 dead //5 took fork
+	int				state;
+	int				begin;
 }				t_philo;
 
 typedef struct s_data
@@ -42,9 +43,9 @@ typedef struct s_data
 	pthread_mutex_t death_mutex;
 	pthread_mutex_t	creation_mutex;
 	pthread_t		death_monit;
+	int				total_p;
 	int				isdead;
 	int				iscreated;
-	int				infinite;
 }				t_data;
 
 void	*routine(t_philo *philo);
