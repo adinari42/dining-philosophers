@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 15:59:26 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/07 04:22:36 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/07 09:42:17 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ typedef struct s_philo
 typedef struct s_data
 {
 	pthread_mutex_t print_mutex;
-	pthread_mutex_t death_mutex;
+	// pthread_mutex_t death_mutex;
 	pthread_mutex_t	creation_mutex;
 	pthread_t		death_monit;
 	int				total_p;

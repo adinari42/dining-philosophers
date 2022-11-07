@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:05:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/07 04:29:28 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/07 19:52:22 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,18 +33,18 @@ int	push(t_philo **thestack, int thevalue, char **argv, int argc)
 	if (newnode == NULL)
 	{
 		write(2, "Error\n", 6);
-		exit (1);
+		return (1);
 	}
 	newnode->philo_id = thevalue;
-	newnode->philo_t_die = atoi(argv[2]);
-	newnode->philo_t_eat = atoi(argv[3]);
-	newnode->philo_t_sleep = atoi(argv[4]);
+	newnode->philo_t_die = ft_atoi(argv[2]);
+	newnode->philo_t_eat = ft_atoi(argv[3]);
+	newnode->philo_t_sleep = ft_atoi(argv[4]);
 	if (newnode->philo_t_sleep > newnode->philo_t_die)
 		newnode->philo_t_sleep = newnode->philo_t_die + 50;
 	if (newnode->philo_t_eat > newnode->philo_t_die)
 		newnode->philo_t_eat = newnode->philo_t_die + 50;
 	if (argc == 6)
-		newnode->remaining_eats = atoi(argv[5]);
+		newnode->remaining_eats = ft_atoi(argv[5]);
 	else
 		newnode->remaining_eats = -1;
 	newnode->next = NULL;
@@ -57,14 +57,15 @@ int	push(t_philo **thestack, int thevalue, char **argv, int argc)
 			temp = temp->next;
 		temp->next = newnode;
 	}
-	return (1);
+	return (0);
 }
 
 int	fill_ll(int philo_id, char **argv, t_philo **philos,int argc)
 {
 	t_philo	*tmp;
 
-	push(philos, philo_id, argv, argc);
+	if (push(philos, philo_id, argv, argc))
+		return (1);
 	tmp = ft_lstlast(*philos);
 	free(tmp->next);
 	tmp->next = NULL;
@@ -87,7 +88,7 @@ int	init_junk(char **argv, int argc, t_philo **philos)
 	}
 	return (0);
 }
-void	init_monitor(t_philo *philo, char **argv)
+int	init_monitor(t_philo *philo, char **argv)
 {
 	t_data	*monitor;
 	t_philo	*tmp;
@@ -96,14 +97,13 @@ void	init_monitor(t_philo *philo, char **argv)
 	if (monitor == NULL)
 	{
 		write(2, "Error\n", 6);
-		exit (1);
+		return (1);
 	}
-	pthread_mutex_init(&monitor->death_mutex, NULL);
+	// pthread_mutex_init(&monitor->death_mutex, NULL);
 	pthread_mutex_init(&monitor->print_mutex, NULL);
 	monitor->isdead = 0;
 	monitor->iscreated = 0;
-	monitor->total_p = atoi(argv[1]);
-
+	monitor->total_p = ft_atoi(argv[1]);
 	tmp = philo;
 	while (tmp)
 	{
@@ -112,6 +112,7 @@ void	init_monitor(t_philo *philo, char **argv)
 		if (tmp == philo)
 			break ;
 	}
+	return (0);
 }
 
 t_philo    *init_philosophers(int argc, char **argv)
@@ -126,6 +127,7 @@ t_philo    *init_philosophers(int argc, char **argv)
 	}
 	tmp = ft_lstlast(philos);
 	tmp->next = philos;
-	init_monitor(philos, argv);
+	if(init_monitor(philos, argv))
+		return (NULL);
 	return (philos);
 }

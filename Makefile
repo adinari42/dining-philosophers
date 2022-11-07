@@ -6,7 +6,7 @@
 #    By: adinari <adinari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/29 16:24:13 by adinari           #+#    #+#              #
-#    Updated: 2022/11/07 00:37:17 by adinari          ###   ########.fr        #
+#    Updated: 2022/11/07 19:41:35 by adinari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ OBJECTS = $(FILES:.c=.o)
 
 # @make -C ./libft
 
-CC = @gcc -fsanitize=thread
+CC = @gcc #-fsanitize=thread
 
 FLAGS = -Wall -Werror -Wextra -pthread 
 

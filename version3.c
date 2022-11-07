@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 19:53:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/07 04:58:48 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/07 20:02:23 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void	ft_usleep(long int time_in_ms)
 		usleep(200);
 }
 
-
 //1 eating //2 sleeping //3 thinking //4 dead //5 took fork
 void	print(t_philo *philo)
 {
@@ -74,7 +73,7 @@ void	print(t_philo *philo)
 	pthread_mutex_unlock(&philo->monitor->print_mutex);
 }
 
-void join_threads(t_philo *philo)
+int join_threads(t_philo *philo)
 {
 	t_philo	*tmp;
 	int		k;
@@ -85,12 +84,12 @@ void join_threads(t_philo *philo)
 	{
 		if (tmp->state != 4)
 		{
-			printf("inside join\n");
+			printf("inside join, thr %d\n", tmp->philo_id);
 			k = pthread_join(tmp->philo_thr, NULL);
 			if (k != 0)
 			{
 				printf("\n Thread join failed \n");
-				return ;
+				return (1);
 			}
 			tmp->state = 4;
 		}	
@@ -99,14 +98,16 @@ void join_threads(t_philo *philo)
 			break ;
 	}
 	k = pthread_join(tmp->monitor->death_monit, NULL);
+	printf("inside join, death monit thr\n");
 	if (k != 0)
 	{
 		printf("\ndeath monit Thread join failed \n");
-		return ;
-	}	
+		return (1);
+	}
+	return (0);
 }
 
-void	destroy_mutexes(t_philo *philos)
+int	destroy_mutexes(t_philo *philos)
 {
 	t_philo	*tmp;
 	int		k;
@@ -117,25 +118,26 @@ void	destroy_mutexes(t_philo *philos)
 		k=pthread_mutex_destroy(&tmp->fork_mutex);
 		if(k!=0)
 		{
-			printf("\n Mutex Destroyed \n");
-			exit(1);
+			printf("\n Error : mutex destroy fail \n");
+			return(1);
 		}
 		tmp = tmp->next;
 		if (tmp == philos)
 			break ;
 	}
-	k=pthread_mutex_destroy(&tmp->monitor->death_mutex);
-	if(k!=0)
-	{
-		printf("\n Mutex Destroyed \n");
-		exit(1);
-	}
 	k=pthread_mutex_destroy(&tmp->monitor->print_mutex);
 	if(k!=0)
 	{
-		printf("\n Mutex Destroyed \n");
-		exit(1);
+		printf("\n Error : mutex destroy fail \n");
+		return(1);
 	}
+	k=pthread_mutex_destroy(&tmp->monitor->creation_mutex);
+	if(k!=0)
+	{
+		printf("\n Error : mutex destroy fail \n");
+		return(1);
+	}
+	return(0);
 }
 
 void	*check_death(t_philo *philo)
@@ -160,7 +162,7 @@ void	*check_death(t_philo *philo)
 	return (NULL);
 }
 
-void	death_monitor_thread(t_philo *philo)
+int	death_monitor_thread(t_philo *philo)
 {
 	int	k;
 
@@ -168,12 +170,13 @@ void	death_monitor_thread(t_philo *philo)
 	if(k != 0)
 	{
 		printf("\n Thread creation error \n");
-		exit(1);
+		return (1);
 	}
+	return (0);
 }
 
 int g_int = 0;
-struct timeval *g_start = NULL;
+// struct timeval *g_start = NULL;
 void eating(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->fork_mutex);
@@ -251,10 +254,10 @@ void	display_list(t_philo *philos)
 int	parse_args(int argc, char **argv)
 {
 	int	i;
-	int j;
+	int	j;
 
 	i = 1;
-	if (argc < 5 || argc > 6)//use is_digit on args
+	if (argc < 5 || argc > 6)
 	{
 		write(2, "Error : wrong number of arguments\n", 34);
 		return (1);
@@ -264,10 +267,9 @@ int	parse_args(int argc, char **argv)
 		j = 0;
 		while (argv[i][j])
 		{
-			// printf("%c", argv[i][j]);
 			if (ft_isdigit(argv[i][j]) == 0)
 			{
-				write(2, "Error : incorrect format/type\n", 30);
+				write(2, "Error : argument incorrect format/type\n", 39);
 				return (1);
 			}
 			j++;
@@ -276,34 +278,14 @@ int	parse_args(int argc, char **argv)
 	}
 	return (0);
 }
-
-int main(int argc, char *argv[]) 
+int	init_forks(t_philo *philos)
 {
-    int		n;
-	t_philo	*philos;
 	t_philo	*tmp;
-	int		k;
 
-	if(parse_args(argc, argv))
-		return (1);
-	gettimeofday(g_start,NULL);
-    n = atoi(argv[1]);//fix to ft_atoi
-    philos = init_philosophers(argc, argv);
-	if (philos->monitor->total_p == 1)
-	{
-		printf("0 %d took a fork\n",philos->philo_id);
-		if (philos->philo_t_die < 0)
-			philos->philo_t_die *= -1;
-		ft_usleep(philos->philo_t_die);
-		printf("%d %d has died\n", philos->philo_t_die ,philos->philo_id);
-		return (1);
-	}
-	//display_list(philos);
 	tmp = philos;
 	while (tmp)
 	{
-		k=pthread_mutex_init(&tmp->fork_mutex,NULL);
-		if(k == -1)
+		if(pthread_mutex_init(&tmp->fork_mutex,NULL) == -1)
 		{
 			printf("\nmutex initialized");
 			return (1);
@@ -312,13 +294,19 @@ int main(int argc, char *argv[])
 		if (tmp == philos)
 			break ;
 	}
+	return (0);
+}
+
+int	init_philo_threads(t_philo *philos)
+{
+	t_philo	*tmp;
+
 	tmp = philos;
 	while (tmp)
 	{
 		gettimeofday(&tmp->start, NULL);
-		philos->last_eat = get_time_stamp(&tmp->start);
-		k=pthread_create(&tmp->philo_thr, NULL, (void *)&routine, tmp);
-		if(k!=0)
+		philos->last_eat = get_time_stamp(&tmp->start);// ft_gettime();
+		if(pthread_create(&tmp->philo_thr, NULL, (void *)&routine, tmp)!=0)
 		{
 			printf("\n Thread creation error \n");
 			return (1);
@@ -327,13 +315,68 @@ int main(int argc, char *argv[])
 		if (tmp == philos)
 			break ;
 	}
+	return (0);
+}
+int	main(int argc, char *argv[]) 
+{
+	t_philo	*philos;
+	// t_philo	*tmp;
+	// int		k;
+
+	if(parse_args(argc, argv))
+		return (1);
+    philos = init_philosophers(argc, argv);
+	if (philos->monitor->total_p == 1)
+	{
+		printf("0 %d took a fork\n",philos->philo_id);
+		ft_usleep(philos->philo_t_die);
+		printf("%d %d has died\n", philos->philo_t_die ,philos->philo_id);
+		return (1);
+	}
+	display_list(philos);
+	if(init_forks(philos))
+		return (1);
+	// tmp = philos;
+	// while (tmp)
+	// {
+	// 	k=pthread_mutex_init(&tmp->fork_mutex,NULL);
+	// 	if(k == -1)
+	// 	{
+	// 		printf("\nmutex initialized");
+	// 		return (1);
+	// 	}
+	// 	tmp = tmp->next;
+	// 	if (tmp == philos)
+	// 		break ;
+	// }
+	if(init_philo_threads(philos))
+		return (1);
+	// tmp = philos;
+	// while (tmp)
+	// {
+	// 	gettimeofday(&tmp->start, NULL);
+	// 	philos->last_eat = get_time_stamp(&tmp->start);// ft_gettime();
+	// 	k=pthread_create(&tmp->philo_thr, NULL, (void *)&routine, tmp);
+	// 	if(k!=0)
+	// 	{
+	// 		printf("\n Thread creation error \n");
+	// 		return (1);
+	// 	}
+	// 	tmp = tmp->next;
+	// 	if (tmp == philos)
+	// 		break ;
+	// }
+	pthread_mutex_init(&philos->monitor->creation_mutex, NULL);
 	pthread_mutex_lock(&philos->monitor->creation_mutex);
 	philos->monitor->iscreated = 1;
-	death_monitor_thread(philos);
+	if(death_monitor_thread(philos))
+		return(1);
 	pthread_mutex_unlock(&philos->monitor->creation_mutex);
 	if (!philos->monitor->isdead)
-		join_threads(philos);
-	destroy_mutexes(philos);
-	// system("leaks philosophers");
+		if(join_threads(philos))
+			return (1);
+	if(destroy_mutexes(philos))
+		return (1);
+	system("leaks philosophers");
     return (0);
 }
