@@ -6,26 +6,18 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:05:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/07 19:52:22 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/07 20:52:15 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-/*returns last node of the ll*/
-t_philo	*ft_lstlast(t_philo *lst)
-{
-	if (!lst)
-		return (NULL);
-	while (lst->next != NULL)
-		lst = lst->next;
-	return (lst);
-}
+
 
 int	push(t_philo **thestack, int thevalue, char **argv, int argc)
 {
 	t_philo	*newnode;
-	t_philo *temp;
+	t_philo	*temp;
 
 	if (thestack == NULL)
 		return (0);
@@ -88,6 +80,7 @@ int	init_junk(char **argv, int argc, t_philo **philos)
 	}
 	return (0);
 }
+
 int	init_monitor(t_philo *philo, char **argv)
 {
 	t_data	*monitor;
@@ -99,7 +92,6 @@ int	init_monitor(t_philo *philo, char **argv)
 		write(2, "Error\n", 6);
 		return (1);
 	}
-	// pthread_mutex_init(&monitor->death_mutex, NULL);
 	pthread_mutex_init(&monitor->print_mutex, NULL);
 	monitor->isdead = 0;
 	monitor->iscreated = 0;
@@ -115,12 +107,12 @@ int	init_monitor(t_philo *philo, char **argv)
 	return (0);
 }
 
-t_philo    *init_philosophers(int argc, char **argv)
+t_philo	*init_philosophers(int argc, char **argv)
 {
-	t_philo *philos;
+	t_philo	*philos;
 	t_philo	*tmp;
 
-    if (init_junk(argv, argc, &philos) != 0)
+	if (init_junk(argv, argc, &philos) != 0)
 	{
 		write(2, "Error\n", 6);
 		return (NULL);

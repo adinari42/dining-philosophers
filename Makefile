@@ -6,14 +6,17 @@
 #    By: adinari <adinari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/29 16:24:13 by adinari           #+#    #+#              #
-#    Updated: 2022/11/07 19:41:35 by adinari          ###   ########.fr        #
+#    Updated: 2022/11/08 20:30:52 by adinari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philosophers
 
-FILES = version3.c\
-		init_utils.c
+FILES = philosophers.c\
+		init_utils.c\
+		thread_utils.c\
+		extra.c\
+		routine_utils.c
 
 OBJECTS = $(FILES:.c=.o)
 
@@ -35,9 +38,6 @@ LIBS = libft/libft.a
 $(NAME): $(OBJECTS)
 	@cd libft && make
 	$(CC) $(OBJECTS) $(LIBS) -o $(NAME) 
-	
-# @gcc $(OBJECTS) -o $(NAME)
-
 
 clean:
 	@cd libft && make clean
