@@ -6,13 +6,11 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 18:05:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/07 20:52:15 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/08 21:25:14 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-
 
 int	push(t_philo **thestack, int thevalue, char **argv, int argc)
 {
@@ -27,18 +25,9 @@ int	push(t_philo **thestack, int thevalue, char **argv, int argc)
 		write(2, "Error\n", 6);
 		return (1);
 	}
-	newnode->philo_id = thevalue;
-	newnode->philo_t_die = ft_atoi(argv[2]);
-	newnode->philo_t_eat = ft_atoi(argv[3]);
-	newnode->philo_t_sleep = ft_atoi(argv[4]);
-	if (newnode->philo_t_sleep > newnode->philo_t_die)
-		newnode->philo_t_sleep = newnode->philo_t_die + 50;
-	if (newnode->philo_t_eat > newnode->philo_t_die)
-		newnode->philo_t_eat = newnode->philo_t_die + 50;
-	if (argc == 6)
-		newnode->remaining_eats = ft_atoi(argv[5]);
-	else
-		newnode->remaining_eats = -1;
+	set_values(newnode, thevalue, argv);
+	reduce_long_time(newnode);
+	set_remaining_eats(newnode, argc, argv);
 	newnode->next = NULL;
 	if (*thestack == NULL)
 		*thestack = newnode;
@@ -52,7 +41,7 @@ int	push(t_philo **thestack, int thevalue, char **argv, int argc)
 	return (0);
 }
 
-int	fill_ll(int philo_id, char **argv, t_philo **philos,int argc)
+int	fill_ll(int philo_id, char **argv, t_philo **philos, int argc)
 {
 	t_philo	*tmp;
 
@@ -63,6 +52,7 @@ int	fill_ll(int philo_id, char **argv, t_philo **philos,int argc)
 	tmp->next = NULL;
 	return (0);
 }
+
 //initializes linked list a with parameters argv,
 //prints error in case of failure
 //returns 1 in case of duplicates
@@ -75,7 +65,7 @@ int	init_junk(char **argv, int argc, t_philo **philos)
 	total_philo = ft_atoi(argv[1]);
 	while (++i < total_philo)
 	{
-		if (fill_ll(i + 1, argv, philos, argc))//check if cond is wron on nect -> we are last if not
+		if (fill_ll(i + 1, argv, philos, argc))
 			return (write(2, "Error\n", 6));
 	}
 	return (0);
@@ -119,7 +109,7 @@ t_philo	*init_philosophers(int argc, char **argv)
 	}
 	tmp = ft_lstlast(philos);
 	tmp->next = philos;
-	if(init_monitor(philos, argv))
+	if (init_monitor(philos, argv))
 		return (NULL);
 	return (philos);
 }

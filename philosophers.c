@@ -6,7 +6,7 @@
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 19:53:15 by adinari           #+#    #+#             */
-/*   Updated: 2022/11/08 20:33:06 by adinari          ###   ########.fr       */
+/*   Updated: 2022/11/08 20:54:01 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,6 @@ void	free_ll(t_philo *stack)
 		free(tmp1);
 	}
 	stack = NULL;
-}
-
-int	ft_isdigit(int c)
-{
-	if (c >= '0' && c <= '9' )
-	{
-		return (c);
-	}
-	else
-		return (0);
 }
 
 int	parse_args(int argc, char **argv)

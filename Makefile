@@ -6,7 +6,7 @@
 #    By: adinari <adinari@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/29 16:24:13 by adinari           #+#    #+#              #
-#    Updated: 2022/11/08 20:30:52 by adinari          ###   ########.fr        #
+#    Updated: 2022/11/08 20:59:50 by adinari          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,8 @@ FILES = philosophers.c\
 		init_utils.c\
 		thread_utils.c\
 		extra.c\
-		routine_utils.c
+		routine_utils.c\
+		utils.c
 
 OBJECTS = $(FILES:.c=.o)
 
@@ -33,19 +34,19 @@ all: $(NAME)
 %.o:%.c
 	gcc $(FLAGS) -c $< -o $@
 
-LIBS = libft/libft.a
+# LIBS = libft/libft.a
 
 $(NAME): $(OBJECTS)
-	@cd libft && make
 	$(CC) $(OBJECTS) $(LIBS) -o $(NAME) 
+# @cd libft && make
 
 clean:
-	@cd libft && make clean
 	@rm -rf $(OBJECTS)
+# @cd libft && make clean
 
 
 fclean: clean
-	@cd libft && make fclean
 	@rm -rf $(NAME) *.o
+# @cd libft && make fclean
 
 re: fclean all

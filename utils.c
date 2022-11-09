@@ -1,22 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adinari <adinari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/31 23:13:17 by adinari           #+#    #+#             */
-/*   Updated: 2022/04/20 01:29:53 by adinari          ###   ########.fr       */
+/*   Created: 2022/11/08 20:57:46 by adinari           #+#    #+#             */
+/*   Updated: 2022/11/08 21:27:55 by adinari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-/*skips spaces using line 28 loop, considers '-' sign, increments i
-check individual char of str is number (ft_isdigit) 
-check ascii of characters and does -48 for conversion (- '0')
-multiplies by 10 to push the current integer to left
-checks if current val is under or above max long min long int
-*/
+#include "philosophers.h"
+
 int	ft_atoi(const char *str)
 {
 	long	val;
@@ -41,4 +36,38 @@ int	ft_atoi(const char *str)
 			return (0);
 	}
 	return (val * sign);
+}
+
+int	ft_isdigit(int c)
+{
+	if (c >= '0' && c <= '9' )
+	{
+		return (c);
+	}
+	else
+		return (0);
+}
+
+void	set_values(t_philo *newnode, int thevalue, char **argv)
+{
+	newnode->philo_id = thevalue;
+	newnode->philo_t_die = ft_atoi(argv[2]);
+	newnode->philo_t_eat = ft_atoi(argv[3]);
+	newnode->philo_t_sleep = ft_atoi(argv[4]);
+}
+
+void	reduce_long_time(t_philo *newnode)
+{
+	if (newnode->philo_t_sleep > newnode->philo_t_die)
+		newnode->philo_t_sleep = newnode->philo_t_die + 50;
+	if (newnode->philo_t_eat > newnode->philo_t_die)
+		newnode->philo_t_eat = newnode->philo_t_die + 50;
+}
+
+void	set_remaining_eats(t_philo	*newnode, int argc, char **argv)
+{
+	if (argc == 6)
+		newnode->remaining_eats = ft_atoi(argv[5]);
+	else
+		newnode->remaining_eats = -1;
 }
